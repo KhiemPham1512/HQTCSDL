@@ -3,7 +3,7 @@
 > Hệ thống du lịch thông minh ứng dụng công nghệ **iBeacon (Bluetooth Low Energy)** giúp tự động nhận diện khoảng cách của khách tham quan với hiện vật lịch sử, phát thuyết minh đa ngôn ngữ và hỗ trợ ban quản lý số hóa, thống kê dữ liệu di tích.
 
 ![Platform](https://img.shields.io/badge/mobile-Android%20(Kotlin%20%2B%20Compose)-3DDC84)
-![Backend](https://img.shields.io/badge/backend-FastAPI%20(Python)-009688)
+![Backend](https://img.shields.io/badge/backend-FastAPI%20(Python%203.12)-009688)
 ![Database](https://img.shields.io/badge/database-SQL%20Server%202022-CC2927)
 ![Admin](https://img.shields.io/badge/admin-React%20%2B%20TypeScript-61DAFB)
 
@@ -21,10 +21,10 @@ Tại nhiều bảo tàng và khu di tích lịch sử ở Việt Nam, việc ti
 
 **Smart Heritage loại bỏ thao tác quét mã thủ công.** Thay vào đó, luồng trải nghiệm tự động của hệ thống là:
 
-```
-Approach  →  Detect (BLE)  →  Resolve  →  Experience  →  Cache  →  Analyze
-Tiếp cận     Bắt sóng iBeacon   Tra cứu     Nghe/Xem       Lưu tạm   Thống kê
-hiện vật     dưới 2.0 mét       đa ngữ      thuyết minh    xem tiếp  lượt tương tác
+```text
+Approach  -->  Detect (BLE)  -->  Resolve  -->  Experience  -->  Cache  -->  Analyze
+Tiếp cận       Bắt sóng iBeacon   Tra cứu       Nghe/Xem         Lưu tạm     Thống kê
+hiện vật       dưới 2.0 mét       đa ngữ        thuyết minh      xem tiếp    lượt tương tác
 ```
 
 ### Luồng tự động nhận diện iBeacon và thuyết minh (điểm đặc trưng)
@@ -50,14 +50,14 @@ flowchart TD
 
 | Nhóm | Chức năng |
 |---|---|
-| 👤 Tài khoản & Đa ngữ | Đăng ký / đăng nhập bằng email + password, chế độ **Khách vãng lai (Guest)** không cần đăng nhập, cập nhật hồ sơ, chọn ngôn ngữ thuyết minh (**Tiếng Việt / Tiếng Anh**), phân quyền `VISITOR` / `ADMIN` |
+| 👤 Tài khoản & Đa ngữ | Đăng ký / đăng nhập bằng email + password, chế độ **Khách vãng lai (Guest)** không cần đăng nhập, cập nhật hồ sơ, chọn ngôn ngữ thuyết minh (**Tiếng Việt / Tiếng Anh**), phân quyền `ADMIN` / `CONTENT_MANAGER` / `VISITOR` |
 | 📡 Nhận diện iBeacon | Quét tín hiệu Bluetooth Low Energy (BLE) liên tục, ước lượng khoảng cách từ chỉ số RSSI, tự động bật **Bottom Sheet Popup** trong vòng $< 2\text{ s}$ khi cách hiện vật $\le 2.0\text{ m}$, chặn thông báo trùng lặp |
-| 🎧 Đa phương tiện & Offline | Xem bài viết lịch sử, bộ sưu tập ảnh, video và trình phát **Audio Guide (`.mp3`)** theo ngôn ngữ đã chọn; tự động lưu đệm (Cache) để khách rời khỏi vùng sóng iBeacon vẫn nghe/đọc tiếp trọn vẹn |
+| 🎧 Đa phương tiện & Offline | Xem mô tả ngắn (`summary`), câu chuyện lịch sử chi tiết (`description`), bộ sưu tập ảnh và trình phát **Audio Guide (`.mp3`)** theo ngôn ngữ đã chọn; tự động lưu đệm (Cache) để khách rời khỏi vùng sóng iBeacon vẫn nghe/đọc tiếp trọn vẹn |
 | 🗺️ Bản đồ di tích | Hiển thị sơ đồ mặt bằng khu di tích với các điểm ghim (Pin) vị trí hiện vật; làm nổi bật vị trí hiện vật khách đang đứng gần; chạm vào ghim để xem thông tin |
 | ❤️ Yêu thích & Lịch sử | Lưu hiện vật yêu thích (Favorites), xem lại nhật ký các hiện vật đã đi qua (Visit History) |
 | ⭐ Đánh giá & Phản hồi | Chấm điểm $1\text{--}5$ sao và gửi nhận xét cho từng hiện vật; Admin kiểm duyệt (hiển thị / ẩn) phản hồi trên Web |
-| 🛠️ Quản trị CMS & iBeacon | Quản lý khu di tích, thêm/sửa/xóa hiện vật đa ngôn ngữ, tải lên file ảnh/MP3/video; đăng ký mã iBeacon (`UUID`, `Major`, `Minor`), gán iBeacon vào hiện vật và chấm tọa độ $(X, Y)$ lên sơ đồ |
-| 📊 Thống kê & Báo cáo | Dashboard trực quan hóa tổng lượt khách, biểu đồ Top hiện vật phổ biến, thời gian tương tác trung bình, tỷ lệ ngôn ngữ sử dụng và xuất báo cáo **Excel (`.xlsx`) / PDF** |
+| 🛠️ Quản trị CMS & iBeacon | Quản lý khu di tích, thêm/sửa/xóa hiện vật đa ngôn ngữ (`HV-001`...), tải lên file ảnh/MP3; đăng ký mã iBeacon (`BC-001`..., `UUID`, `Major`, `Minor`), gán iBeacon vào hiện vật và chấm tọa độ $(X, Y)$ lên sơ đồ |
+| 📊 Thống kê & Báo cáo | Dashboard trực quan hóa tổng lượt khách, biểu đồ Top hiện vật phổ biến, lượt tương tác theo ngày, tỷ lệ ngôn ngữ sử dụng và xuất báo cáo **Excel (`.xlsx`) / PDF** |
 
 ---
 
@@ -75,11 +75,11 @@ flowchart LR
     end
 
     subgraph Backend["⚙️ Server Trung tâm"]
-        API["🐍 FastAPI (Python)<br/>RESTful API + JWT Auth<br/>+ Media Static Server"]
+        API["🐍 FastAPI (Python 3.12)<br/>RESTful API + JWT Auth<br/>+ Media Static Server"]
     end
 
     subgraph DataLayer["🗄️ Lưu trữ Dữ liệu"]
-        DB[("🗄️ SQL Server 2022<br/>Dữ liệu quan hệ & Log")]
+        DB[("🗄️ SQL Server 2022<br/>SmartHeritageDB")]
         FILES["🖼️ Thư mục Static Media<br/>(Ảnh, Audio MP3, Sơ đồ)"]
     end
 
@@ -109,54 +109,66 @@ flowchart LR
 
 ---
 
-## 4. Công nghệ sử dụng
+## 4. Công nghệ sử dụng & Phiên bản cần thiết
+
+> ⚠️ **Lưu ý bắt buộc cho các thành viên trong nhóm:** Để tránh lỗi xung đột thư viện hoặc lỗi thiếu trình biên dịch C++/Rust khi cài đặt, các thành viên cần cài đặt **đúng phiên bản phần mềm** được quy định dưới đây.
+
+### 🛠️ Phần mềm nền tảng cần cài đặt trên máy
+
+| Phần mềm / Công cụ | Phiên bản bắt buộc / Khuyên dùng | Thành viên cần cài | Lưu ý quan trọng khi cài đặt |
+|---|---|---|---|
+| **Python** | **Python 3.12.x (64-bit)** *(Khuyên dùng `3.12.10`)* | Cả nhóm (đặc biệt TV1, TV3, TV4) | **TUYỆT ĐỐI KHÔNG dùng Python 3.14 hoặc 3.15** (chưa có gói `.whl` cho `pyodbc` và `pydantic-core`). Khi chạy bộ cài `.exe` trên Windows, bắt buộc tích chọn **"Add python.exe to PATH"**. Không dùng Python đi kèm MSYS2 (`ucrt64`). |
+| **SQL Server & SSMS** | **Microsoft SQL Server 2019 / 2022** (Developer hoặc Express) + **SSMS 19 / 20** | Cả nhóm | Khi cài SSMS sẽ tự động cài sẵn `ODBC Driver 17/18 for SQL Server` để Python kết nối. |
+| **Node.js** | **Node.js 20.x LTS** (hoặc `18.x LTS`) | TV3, TV4 (Admin Web) | Tải bản Windows Installer (`.msi`), kiểm tra sau khi cài bằng lệnh `node -v` và `npm -v`. |
+| **Android Studio** | **Android Studio Koala / Ladybug (2024.x+)** + **JDK 17** | TV2, TV1 (Mobile) | Cần `Android SDK 34`, 1 điện thoại Android thật để quét Bluetooth và 1 điện thoại phụ cài app **Beacon Simulator**. |
+| **Git & VS Code** | Bản mới nhất | Cả 5 thành viên | Dùng để quản lý mã nguồn Git và lập trình Backend / Web. |
+
+### ⚙️ Backend (Python 3.12 – `backend/requirements.txt`)
+
+| Mục đích | Thư viện | Phiên bản chuẩn |
+|---|---|---|
+| Framework RESTful API | `fastapi` | `0.115.0` (Tự động sinh tài liệu OpenAPI / Swagger tại `/docs`) |
+| ASGI Server chạy ứng dụng | `uvicorn[standard]` | `0.30.6` (Hỗ trợ tự động tải lại khi sửa code với cờ `--reload`) |
+| Kết nối & Truy vấn CSDL | `sqlalchemy` | `2.0.35` |
+| Driver kết nối SQL Server | `pyodbc` | `5.1.0` |
+| Kiểm tra dữ liệu (Validation) | `pydantic` | `2.9.2` (`pydantic-core==2.23.4`) |
+| Quản lý biến môi trường `.env` | `python-dotenv` | `1.0.1` |
+| Upload file Ảnh & Audio MP3 | `python-multipart` | `0.0.12` |
 
 ### 📱 Mobile (Android)
 
-| Mục đích | Công nghệ |
+| Mục đích | Công nghệ & Phiên bản |
 |---|---|
-| Ngôn ngữ / Giao diện | Kotlin, Jetpack Compose, Material 3 |
-| Kiến trúc | MVVM (`UI` $\rightarrow$ `ViewModel` $\rightarrow$ `Repository`), Kotlin Coroutines + StateFlow |
-| Quét sóng iBeacon (BLE) | `Android Beacon Library (AltBeacon)` |
+| Ngôn ngữ / Giao diện | `Kotlin 1.9+`, `Jetpack Compose`, `Material 3` (`Min SDK 26 - Android 8.0`, `Target SDK 34`) |
+| Kiến trúc | MVVM (`UI` $\rightarrow$ `ViewModel` $\rightarrow$ `Repository`), `Kotlin Coroutines` + `StateFlow` |
+| Quét sóng iBeacon (BLE) | `Android Beacon Library (org.altbeacon:android-beacon-library:2.20+)` |
 | Giả lập thiết bị phát iBeacon | Ứng dụng `Beacon Simulator` trên điện thoại Android phụ |
-| Phát thuyết minh Audio / Video | `AndroidX Media3 (ExoPlayer)` |
-| Lưu đệm xem ngoài vùng sóng | `Room Database (SQLite)` + `DataStore` (lưu ngôn ngữ & phiên đăng nhập) |
-| Gọi REST API | `Retrofit2` + `OkHttp3` + `Gson / Kotlinx Serialization` |
-| Hiển thị hình ảnh & sơ đồ | `Coil` |
-
-### ⚙️ Backend (Python)
-
-| Mục đích | Công nghệ |
-|---|---|
-| Framework API | `FastAPI` + `Uvicorn` (Tự động sinh tài liệu OpenAPI / Swagger tại `/docs`) |
-| Kết nối Cơ sở dữ liệu | `SQLAlchemy 2.0` + `pyodbc` |
-| Xác thực & Phân quyền | `JWT (PyJWT / python-jose)` + `passlib[bcrypt]` (Hash mật khẩu) + RBAC |
-| Phục vụ file Ảnh / Audio MP3 | `FastAPI StaticFiles` (`multipart/form-data` upload) |
-| Xuất báo cáo thống kê | `OpenPyXL` (xuất Excel `.xlsx`) |
+| Phát thuyết minh Audio / Video | `AndroidX Media3 (ExoPlayer 1.3+)` |
+| Lưu đệm xem ngoài vùng sóng | `Room Database 2.6+ (SQLite)` + `Preferences DataStore` |
+| Gọi REST API & Hiển thị ảnh | `Retrofit 2.11+` + `OkHttp 4.12+` + `Coil Compose 2.6+` |
 
 ### 🗄️ Cơ sở dữ liệu
 
-| Mục đích | Công nghệ |
+| Mục đích | Công nghệ & Phiên bản |
 |---|---|
-| Hệ quản trị CSDL | `Microsoft SQL Server 2022` |
-| Công cụ quản trị & Thiết kế | `SQL Server Management Studio (SSMS)` |
-| Tối ưu truy vấn thống kê | Indexing trên cặp `(major, minor)` và các hàm tổng hợp dữ liệu báo cáo |
+| Hệ quản trị CSDL | `Microsoft SQL Server 2019 / 2022` (Database: `SmartHeritageDB`) |
+| Công cụ quản trị & Thiết kế | `SQL Server Management Studio (SSMS 19/20)` |
+| Driver kết nối từ Backend | `ODBC Driver 17 for SQL Server` hoặc `ODBC Driver 18 for SQL Server` |
 
 ### 🖥️ Admin Web
 
-| Mục đích | Công nghệ |
+| Mục đích | Công nghệ & Phiên bản |
 |---|---|
-| Framework | `React` + `Vite` + `TypeScript` |
-| Thư viện giao diện CMS | `Ant Design` (Bảng dữ liệu, Tabs đa ngôn ngữ, Form Upload file) |
-| Biểu đồ thống kê Dashboard | `Chart.js` / `Recharts` |
-| Sơ đồ vị trí hiện vật & iBeacon | Bản đồ mặt bằng tương tác chấm tọa độ $(X, Y)$ |
-| Gọi API | `Axios` |
+| Framework & Build Tool | `React 18.x` + `Vite 5.x` + `TypeScript 5.x` |
+| Thư viện giao diện CMS | `Ant Design 5.x` / `Tailwind CSS 3.x` |
+| Biểu đồ thống kê Dashboard | `Chart.js 4.x` / `Recharts 2.x` |
+| Gọi API & Xuất báo cáo | `Axios 1.7+` + `SheetJS (xlsx)` |
 
 ---
 
 ## 5. Thiết kế cơ sở dữ liệu
 
-Schema gồm **6 bảng cốt lõi** trong SQL Server, đảm bảo lưu trữ đầy đủ nội dung đa ngôn ngữ, cấu hình iBeacon và nhật ký tương tác của du khách.
+Schema gồm **6 bảng cốt lõi** trong SQL Server (`database/init_schema.sql`), đồng bộ 100% với thiết kế Figma Web Admin (`W1`–`W8`) và Mobile App (`M1`–`M10`).
 
 ```mermaid
 erDiagram
@@ -173,8 +185,9 @@ erDiagram
         varchar email UK
         varchar password_hash
         nvarchar full_name
-        varchar role "ADMIN | VISITOR"
-        varchar preferred_lang "vi | en"
+        varchar role "ADMIN | CONTENT_MANAGER | VISITOR"
+        varchar preferred_lang "vi | en | ko | ja | zh"
+        bit auto_beacon_notify
         bit is_active
     }
     SITES {
@@ -184,34 +197,42 @@ erDiagram
         nvarchar description_vi
         nvarchar description_en
         nvarchar address
+        nvarchar floor_name
         varchar map_image_url
     }
     ARTIFACTS {
         int artifact_id PK
         int site_id FK
-        varchar artifact_code UK
+        varchar artifact_code UK "HV-001..HV-005"
+        nvarchar zone_name
         nvarchar name_vi
         nvarchar name_en
-        nvarchar description_vi
+        nvarchar summary_vi "Mô tả ngắn Popup"
+        nvarchar summary_en
+        nvarchar description_vi "Câu chuyện lịch sử"
         nvarchar description_en
         varchar image_url
-        varchar video_url
         varchar audio_vi_url
         varchar audio_en_url
+        int audio_duration_sec
+        varchar translated_langs
         float map_x
         float map_y
-        bit is_active
+        varchar status "PUBLISHED | DRAFT | HIDDEN"
     }
     BEACONS {
         int beacon_id PK
+        varchar beacon_code UK "BC-001..BC-005"
         int artifact_id FK
+        nvarchar zone_name
         varchar uuid
         int major
         int minor
         int tx_power
         float trigger_distance
-        datetime last_seen_at
-        varchar status "ACTIVE | INACTIVE"
+        int battery_level
+        datetime2 last_seen_at
+        varchar status "ACTIVE | LOW_BATTERY | LOST_SIGNAL"
     }
     VISIT_LOGS {
         int log_id PK
@@ -221,16 +242,17 @@ erDiagram
         varchar lang_used "vi | en"
         int duration_seconds
         bit is_favorite
-        datetime visited_at
+        datetime2 visited_at
     }
     FEEDBACKS {
         int feedback_id PK
         int user_id FK
+        nvarchar visitor_name
         int artifact_id FK
         tinyint rating "1..5"
         nvarchar comment
         bit is_visible
-        datetime created_at
+        datetime2 created_at
     }
 ```
 
@@ -253,74 +275,141 @@ stateDiagram-v2
 
 ## 6. Cơ chế kỹ thuật & Bảo mật: những điểm chính
 
+- **Bộ thông số iBeacon chuẩn hóa toàn dự án:**
+  - `UUID` dùng chung: `FDA50693-A4E2-4FB1-AFCF-C6EB07647825`
+  - `Major`: `1` (Khu di tích số 1)
+  - `Minor`: `101`, `102`, `103`, `104`, `105` (Tương ứng với 5 hiện vật mẫu `HV-001` $\rightarrow$ `HV-005` và mã thiết bị `BC-001` $\rightarrow$ `BC-005`).
 - **Lọc nhiễu tín hiệu BLE & Chống lặp thông báo:** Sóng Bluetooth rất dễ dao động; ứng dụng kết hợp kiểm tra ngưỡng khoảng cách kích hoạt (`trigger_distance` $\le 2.0\text{ m}$) và biến khóa thời gian (`Cooldown Timer`) để không bao giờ bật thông báo lặp lại làm phiền khách khi họ vẫn đứng tại cùng một hiện vật.
 - **Xem liên tục ngoài vùng phủ sóng:** Ngay khi hiện vật được kích hoạt, nội dung văn bản và đường dẫn âm thanh được lưu vào `Room Database` trên điện thoại, giúp khách vừa đi dạo sang khu vực khác vừa nghe hết bài thuyết minh.
-- **Tự động chuyển đổi đa ngôn ngữ:** Dựa trên cờ ngôn ngữ (`preferred_lang` = `vi` hoặc `en`) của khách, API tự động trả về tiêu đề, câu chuyện lịch sử và file âm thanh `.mp3` tương ứng.
-- **Giám sát tình trạng iBeacon thụ động (Passive Telemetry):** Mỗi khi điện thoại của bất kỳ khách tham quan nào quét thấy iBeacon và gửi log lên Server, hệ thống tự động cập nhật cột `last_seen_at` của thiết bị đó để Admin biết thiết bị còn hoạt động hay đã hết pin.
-- **Bảo mật & Phân quyền (RBAC):** Mật khẩu người dùng được mã hóa một chiều bằng `bcrypt`. Các API thêm/sửa/xóa hiện vật, cấu hình iBeacon và xuất báo cáo đều kiểm tra JWT Token với quyền `ADMIN`.
+- **Tự động chuyển đổi đa ngôn ngữ:** Dựa trên cờ ngôn ngữ (`lang` = `vi` hoặc `en`) của khách, API tự động trả về tiêu đề, mô tả ngắn, câu chuyện lịch sử và file âm thanh `.mp3` tương ứng.
+- **Giám sát tình trạng iBeacon thụ động (Passive Telemetry):** Mỗi khi điện thoại của khách tham quan quét thấy iBeacon và gọi API `/api/beacons/resolve`, hệ thống tự động cập nhật cột `last_seen_at` của thiết bị đó để Admin theo dõi trên Web.
+- **Bảo mật & Phân quyền (RBAC):** Hệ thống phân tách rõ 3 vai trò `ADMIN`, `CONTENT_MANAGER` và `VISITOR`.
 
 ---
 
 ## 7. Giao diện (thiết kế Figma)
 
-Thiết kế gồm **9 màn hình Mobile (`M1`–`M9`)** và **8 màn hình Web Admin (`W1`–`W8`)**:
+Thiết kế gồm **10 màn hình Mobile (`M1`–`M10`)** và **8 màn hình Web Admin (`W1`–`W8`)**:
 
 | Nhóm màn hình | Nội dung |
 |---|---|
-| **Mobile: Khởi động & Tài khoản (`M1`, `M2`)** | Chọn ngôn ngữ (Việt / Anh), Đăng nhập, Đăng ký, hoặc nút **Tham quan ngay (Guest)** |
-| **Mobile: Trang chủ & Rada BLE (`M3`, `M4`)** | Thanh trạng thái đang dò sóng iBeacon, danh sách hiện vật nổi bật, **Bottom Sheet Popup** tự động trượt lên khi đến gần hiện vật |
-| **Mobile: Trải nghiệm Hiện vật (`M5`, `M7`)** | Hình ảnh hiện vật, trình phát **Audio Guide MP3** (Play/Pause/Tua), bài viết lịch sử, nút Thả tim và hộp thoại chấm sao đánh giá |
-| **Mobile: Bản đồ & Cá nhân (`M6`, `M8`, `M9`)** | Bản đồ sơ đồ mặt bằng có chấm ghim vị trí hiện vật, Tab Yêu thích & Lịch sử đã xem, Cài đặt ngôn ngữ & bật/tắt thông báo BLE |
-| **Admin Web: Quản trị CMS (`W1`, `W3`, `W4`)** | Đăng nhập Admin, Danh sách hiện vật, Form Thêm/Sửa hiện vật chia Tab Tiếng Việt / Tiếng Anh và tải file Ảnh + MP3 |
-| **Admin Web: Hạ tầng iBeacon (`W5`, `W6`)** | Bảng đăng ký `UUID`, `Major`, `Minor`, gán iBeacon vào hiện vật, chấm tọa độ vị trí lên sơ đồ mặt bằng khu di tích |
-| **Admin Web: Thống kê & Phản hồi (`W2`, `W7`, `W8`)** | 4 thẻ KPI tổng quan, 3 biểu đồ (Top hiện vật, Lượt khách theo ngày, Tỷ lệ ngôn ngữ), nút xuất Excel/PDF, trang duyệt bình luận và quản lý tài khoản |
+| **Mobile: Khởi động & Tài khoản (`M1`, `M2`, `M3`)** | `1.` Chào mừng và chọn ngôn ngữ (Việt / Anh), `2.` Đăng nhập (có nút **Tiếp tục với tư cách Khách - Guest**), `3.` Tạo tài khoản mới |
+| **Mobile: Trang chủ & Rada BLE (`M4`, `M5`)** | `4.` Trang chủ và Rada dò sóng iBeacon + danh sách hiện vật nổi bật, `5.` **Popup tự động** trượt lên khi tới gần hiện vật ($\le 2.0\text{ m}$) |
+| **Mobile: Trải nghiệm Hiện vật (`M6`, `M8`)** | `6.` Chi tiết hiện vật, trình phát **Audio Guide MP3**, câu chuyện lịch sử và nhãn báo đã lưu tạm; `8.` Hộp thoại chấm sao và chia sẻ cảm nhận |
+| **Mobile: Bản đồ, Đã lưu & Cá nhân (`M7`, `M9`, `M10`)** | `7.` Bản đồ tương tác sơ đồ mặt bằng có ghim hiện vật, `9.` Yêu thích & Lịch sử tham quan (2 Tabs), `10.` Hồ sơ cá nhân & công tắc bật/tắt thông báo tự động iBeacon |
+| **Admin Web: Quản trị CMS (`W1`, `W3`, `W4`)** | `W1.` Đăng nhập quản trị, `W3.` Quản lý hiện vật (`HV-001`...), `W4.` Thêm/Sửa hiện vật đa ngôn ngữ và tải file Ảnh + MP3 |
+| **Admin Web: Hạ tầng iBeacon (`W5`, `W6`)** | `W5.` Quản lý thiết bị iBeacon (`BC-001`..., trạng thái hoạt động/pin yếu/mất tín hiệu), `W6.` Bản đồ vị trí iBeacon & chấm tọa độ lên sơ đồ khu di tích |
+| **Admin Web: Thống kê & Hệ thống (`W2`, `W7`, `W8`)** | `W2.` Thống kê & xuất báo cáo (Top hiện vật, Lượt khách theo ngày, Ngôn ngữ, xuất Excel/PDF), `W7.` Kiểm duyệt đánh giá & phản hồi, `W8.` Quản lý ngôn ngữ & tài khoản |
 
 ---
 
 ## 8. Cấu trúc repository
 
 ```text
-smart-heritage/
-├── mobile/                  # Ứng dụng Android (Kotlin + Jetpack Compose)
-│   └── app/src/main/java/com/smartheritage/
-│       ├── ble/             # Bộ quét AltBeacon & lọc chống lặp thông báo
-│       ├── data/            # Retrofit API client & Room Database (Offline Cache)
-│       ├── ui/              # Các màn hình Compose (M1 -> M9) & ExoPlayer
-│       └── viewmodel/       # Quản lý trạng thái giao diện
-├── backend/                 # Server Python FastAPI
-│   ├── app/
-│   │   ├── routers/         # auth, sites, artifacts, beacons, analytics, feedbacks
-│   │   ├── core/            # config, bảo mật JWT & RBAC
-│   │   ├── models/          # SQLAlchemy ORM models (6 bảng)
-│   │   └── schemas/         # Pydantic request/response schemas
-│   ├── static/              # Lưu trữ file ảnh, sơ đồ và file âm thanh .mp3
-│   └── main.py
-├── admin-web/               # Cổng quản trị Web (React + Vite + TypeScript)
-│   └── src/
-│       ├── pages/           # Các trang quản trị W1 -> W8
-│       ├── components/      # Biểu đồ Chart.js, Bản đồ sơ đồ, Upload form
-│       └── services/        # Cấu hình Axios gọi FastAPI
+SmartHeritage/
 ├── database/
-│   ├── init_schema.sql      # Script tạo 6 bảng SQL Server
-│   └── seed_data.sql        # Dữ liệu mẫu 5 hiện vật lịch sử (Việt - Anh)
-├── docs/                    # Báo cáo SRS/SDD, Biểu đồ PlantUML, Hướng dẫn sử dụng
+│   └── init_schema.sql          # Script tạo CSDL SmartHeritageDB (6 bảng + Dữ liệu mẫu HV-001..005)
+├── backend/                     # Server Python FastAPI
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── database.py          # Tự động nhận diện ODBC Driver & kết nối SQL Server
+│   │   └── main.py              # Khung FastAPI, Static Media & các RESTful API
+│   ├── static/
+│   │   ├── images/              # Lưu ảnh hiện vật & ảnh sơ đồ mặt bằng
+│   │   └── audio/               # Lưu file âm thanh thuyết minh (.mp3)
+│   ├── .env.example             # File mẫu cấu hình kết nối SQL Server
+│   └── requirements.txt         # Danh sách thư viện Python 3.12 chuẩn
+├── mobile/                      # Ứng dụng Android (Kotlin + Jetpack Compose)
+├── admin-web/                   # Cổng quản trị Web (React + Vite + TypeScript)
+├── .gitignore                   # Bỏ qua .venv, __pycache__, .env, node_modules, build
 └── README.md
 ```
 
 ---
 
-## 9. Chạy thử dự án (tóm tắt)
+## 9. Hướng dẫn cài đặt & Khởi chạy chi tiết (Áp dụng cho mọi máy trong nhóm)
 
-1. **Cơ sở dữ liệu (SQL Server)**: Mở SSMS, chạy file `database/init_schema.sql` để tạo CSDL `SmartHeritageDB` và chạy `database/seed_data.sql` để nạp sẵn 5 hiện vật mẫu.
-2. **Backend (FastAPI)**: `cd backend && python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt`, cấu hình chuỗi kết nối SQL Server trong `.env`, chạy `uvicorn main:app --host 0.0.0.0 --port 8000 --reload` (mở `http://localhost:8000/docs` để xem Swagger).
-3. **Admin Web**: `cd admin-web && npm install && npm run dev` để mở trang quản trị và Dashboard thống kê.
-4. **Mobile & Giả lập iBeacon**: Mở thư mục `mobile/` bằng Android Studio, điền địa chỉ IP LAN của laptop vào `ApiClient.kt` rồi chạy lên Điện thoại 1. Trên Điện thoại 2, mở ứng dụng **Beacon Simulator**, bật cấu hình `Major = 1, Minor = 101` và đặt gần Điện thoại 1 để trải nghiệm tự động bật thuyết minh.
+Mọi thành viên trong nhóm sau khi `git clone` dự án về máy chỉ cần làm đúng theo thứ tự **4 bước** dưới đây là hệ thống sẽ hoạt động ngay mà không gặp lỗi môi trường:
+
+### Bước 1: Khởi tạo Cơ sở dữ liệu trên SQL Server (SSMS)
+
+1. Mở phần mềm **SQL Server Management Studio (SSMS)** và kết nối vào SQL Server trên máy của bạn.
+   * 📌 **Ghi nhớ tên `Server name`** lúc đăng nhập SSMS (thường là `localhost`, `.`, hoặc `.\SQLEXPRESS`).
+2. Trên thanh menu của SSMS, chọn **File** $\rightarrow$ **Open** $\rightarrow$ **File...** và chọn file **`database/init_schema.sql`** trong thư mục dự án.
+3. Nhấn phím **`F5` (Execute)**.
+   * Script sẽ tự động tạo Database **`SmartHeritageDB`**, khởi tạo đủ **6 bảng** và nạp sẵn dữ liệu mẫu gồm 5 tài khoản, 5 hiện vật lịch sử (`HV-001` $\rightarrow$ `HV-005`) và 5 thiết bị iBeacon (`BC-001` $\rightarrow$ `BC-005`).
+
+### Bước 2: Thiết lập Môi trường ảo Python 3.12 & Cài đặt Thư viện Backend
+
+1. Đảm bảo máy đã cài đặt **Python 3.12 (64-bit)** từ [python.org/downloads/windows](https://www.python.org/downloads/windows/) và đã tích chọn **"Add python.exe to PATH"**.
+   * *Mẹo kiểm tra:* Nếu máy có cài MSYS2 (`ucrt64`) hoặc bản Python khác, hãy luôn dùng lệnh `py -3.12` dưới đây để gọi đúng Python 3.12 chuẩn của Windows.
+2. Mở Terminal (PowerShell) trong VS Code và chạy lần lượt từng lệnh sau:
+
+```powershell
+# 1. Di chuyển vào thư mục backend
+cd backend
+
+# 2. Tạo môi trường ảo (.venv) bằng đúng Python 3.12 chuẩn Windows
+py -3.12 -m venv .venv
+
+# 3. Mở quyền chạy script tạm thời cho cửa sổ PowerShell hiện tại
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+# 4. Kích hoạt môi trường ảo (Đầu dòng lệnh sẽ xuất hiện chữ (.venv) màu xanh)
+.\.venv\Scripts\Activate.ps1
+
+# 5. Cài đặt toàn bộ thư viện trong requirements.txt
+pip install -r requirements.txt
+```
+
+> 💡 **Ghi chú:**
+> - Nếu bạn dùng cửa sổ **Command Prompt (`cmd`)**, ở lệnh số 4 chỉ cần gõ: `.venv\Scripts\activate`
+> - Khi muốn tắt môi trường ảo, chỉ cần gõ lệnh: `deactivate`
+
+### Bước 3: Cấu hình file `.env` và Khởi chạy Server FastAPI
+
+1. Trong thư mục **`backend/`**, tạo một file mới tên là **`.env`** (hoặc copy từ `.env.example`) với nội dung sau:
+
+```env
+USE_WINDOWS_AUTH=true
+DB_SERVER=.\SQLEXPRESS
+DB_NAME=SmartHeritageDB
+
+# Chỉ cần dùng 2 dòng dưới nếu máy bạn tắt Windows Auth (USE_WINDOWS_AUTH=false)
+DB_USER=sa
+DB_PASSWORD=your_password_here
+```
+
+*(Thay giá trị `DB_SERVER` bằng đúng tên `Server name` trên SSMS của máy bạn, ví dụ `DB_SERVER=localhost` hoặc `DB_SERVER=.\SQLEXPRESS`).*
+
+2. Tại cửa sổ Terminal đang bật `(.venv)` trong thư mục `backend`, chạy lệnh khởi động Server:
+
+```powershell
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+3. **Kiểm tra xác nhận trên trình duyệt:**
+   * Truy cập **`http://localhost:8000/docs`**: Giao diện tài liệu **Swagger UI** hiện ra đầy đủ các API.
+   * Truy cập **`http://localhost:8000/api/health-db`**: Trả về `"status": "CONNECTED"` và `"total_artifacts": 5` là Backend đã kết nối SQL Server thành công.
+   * Truy cập **`http://localhost:8000/api/beacons/resolve?major=1&minor=101&lang=vi`**: Trả về JSON thông tin hiện vật **Trống đồng Ngọc Lũ (`HV-001`)**.
+
+### Bước 4: Khởi chạy Admin Web & Mobile App (Khi ghép nối Frontend)
+
+1. **Admin Web (`admin-web/`)**:
+   ```powershell
+   cd admin-web
+   npm install
+   npm run dev
+   ```
+2. **Mobile App (`mobile/`) & Giả lập sóng iBeacon**:
+   * Mở thư mục `mobile/` bằng **Android Studio**, điền địa chỉ IPv4 LAN của laptop chạy Backend (xem bằng lệnh `ipconfig`, ví dụ `http://192.168.1.10:8000`) vào `ApiClient.kt` rồi chạy ứng dụng lên **Điện thoại 1**.
+   * Trên **Điện thoại 2**, mở ứng dụng **Beacon Simulator**, tạo cấu hình phát iBeacon với `UUID = FDA50693-A4E2-4FB1-AFCF-C6EB07647825`, `Major = 1`, `Minor = 101` và đặt gần Điện thoại 1 để kiểm thử tính năng tự động bật Popup và phát thuyết minh.
 
 ---
 
 ## 10. Lộ trình (Hoàn thành trong 1 tháng - 30 ngày)
 
-- [ ] **M0** Nền tảng (Ngày 1–3): Khởi tạo repo, thiết kế Figma, tạo CSDL SQL Server, chuẩn bị dữ liệu mẫu (Ảnh/MP3) & khung FastAPI
+- [x] **M0** Nền tảng (Ngày 1–3): Khởi tạo repo, đồng bộ thiết kế Figma, tạo CSDL SQL Server (`init_schema.sql`), chuẩn bị dữ liệu mẫu & khung FastAPI
 - [ ] **M1** Tài khoản & Đa ngôn ngữ (Ngày 4–6): Đăng ký, đăng nhập, chế độ Khách (Guest), chọn ngôn ngữ (Việt/Anh), phân quyền Admin/Visitor
 - [ ] **M2** Quản trị nội dung CMS (Ngày 7–10): Quản lý khu di tích, thêm/sửa/xóa hiện vật đa ngôn ngữ, upload ảnh & file thuyết minh MP3
 - [ ] **M3** Hạ tầng iBeacon (Ngày 11–13): Đăng ký thiết bị iBeacon (`UUID`, `Major`, `Minor`), gán vào hiện vật, cấu hình bán kính & tọa độ sơ đồ
@@ -336,8 +425,8 @@ smart-heritage/
 
 | Thành viên | Vai trò chính |
 |---|---|
-| Thành viên 1 (Leader) | Thiết kế CSDL SQL Server, phát triển Backend FastAPI & tích hợp hệ thống |
-| Thành viên 2 | Phát triển ứng dụng di động Android (Kotlin, Jetpack Compose, Quét sóng BLE iBeacon) |
-| Thành viên 3 | Phát triển Web Admin CMS (Quản lý di tích, hiện vật đa ngôn ngữ & cấu hình iBeacon) |
-| Thành viên 4 | Phát triển Dashboard Thống kê, Biểu đồ báo cáo, Xuất Excel/PDF & Quản lý phản hồi |
-| Thành viên 5 | Thiết kế giao diện Figma, chuẩn bị Dữ liệu mẫu (Việt/Anh, Audio MP3) & Tài liệu báo cáo |
+| **Phạm Gia Khiêm** (Leader - TV1) | Thiết kế CSDL SQL Server, phát triển Backend FastAPI & tích hợp hệ thống |
+| **Thành viên 2** (TV2) | Phát triển ứng dụng di động Android (Kotlin, Jetpack Compose, Quét sóng BLE iBeacon) |
+| **Thành viên 3** (TV3) | Phát triển Web Admin CMS (Quản lý di tích, hiện vật đa ngôn ngữ & cấu hình iBeacon) |
+| **Thành viên 4** (TV4) | Phát triển Dashboard Thống kê, Biểu đồ báo cáo, Xuất Excel/PDF & Quản lý phản hồi |
+| **Thành viên 5** (TV5) | Thiết kế giao diện Figma, chuẩn bị Dữ liệu mẫu (Việt/Anh, Audio MP3) & Tài liệu báo cáo |
