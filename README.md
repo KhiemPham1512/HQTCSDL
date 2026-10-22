@@ -305,23 +305,34 @@ Thiết kế gồm **10 màn hình Mobile (`M1`–`M10`)** và **8 màn hình We
 
 ## 8. Cấu trúc repository
 
+Cấu trúc thư mục được chuẩn hóa xuyên suốt từ cột mốc **M0 đến M8**, chỉ tập trung vào các thành phần cốt lõi của 4 phân hệ (`database`, `backend`, `mobile`, `admin-web`):
+
 ```text
 SmartHeritage/
 ├── database/
-│   └── init_schema.sql          # Script tạo CSDL SmartHeritageDB (6 bảng + Dữ liệu mẫu HV-001..005)
-├── backend/                     # Server Python FastAPI
+│   └── init_schema.sql          # Script tạo 6 bảng SQL Server & nạp sẵn dữ liệu mẫu (M0)
+├── backend/                     # Server RESTful API (Python 3.12 + FastAPI)
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── database.py          # Tự động nhận diện ODBC Driver & kết nối SQL Server
-│   │   └── main.py              # Khung FastAPI, Static Media & các RESTful API
-│   ├── static/
-│   │   ├── images/              # Lưu ảnh hiện vật & ảnh sơ đồ mặt bằng
-│   │   └── audio/               # Lưu file âm thanh thuyết minh (.mp3)
-│   ├── .env.example             # File mẫu cấu hình kết nối SQL Server
-│   └── requirements.txt         # Danh sách thư viện Python 3.12 chuẩn
+│   │   ├── database.py          # Kết nối SQL Server qua SQLAlchemy & pyodbc (M0)
+│   │   ├── schemas.py           # Khai báo kiểu dữ liệu Request/Response Pydantic (M1-M7)
+│   │   ├── auth.py              # Xử lý đăng ký, đăng nhập, JWT & phân quyền (M1)
+│   │   └── main.py              # Khởi chạy FastAPI & định nghĩa các Endpoint API (M0-M7)
+│   ├── static/                  # Lưu trữ file đa phương tiện phục vụ qua HTTP (M0, M2, M5)
+│   │   ├── images/              # Ảnh đại diện hiện vật (HV-001..) & sơ đồ mặt bằng
+│   │   └── audio/               # File âm thanh thuyết minh đa ngôn ngữ (.mp3)
+│   └── requirements.txt         # Danh sách các thư viện Python 3.12 của Backend
 ├── mobile/                      # Ứng dụng Android (Kotlin + Jetpack Compose)
+│   └── app/src/main/java/com/smartheritage/
+│       ├── ble/                 # Bộ quét sóng iBeacon (AltBeacon) & lọc chống lặp (M4)
+│       ├── data/                # Retrofit API Client & Room Database lưu đệm Offline (M5, M6)
+│       ├── ui/                  # Giao diện 10 màn hình Compose (M1-M10) & trình phát ExoPlayer
+│       └── viewmodel/           # Quản lý trạng thái giao diện theo kiến trúc MVVM
 ├── admin-web/                   # Cổng quản trị Web (React + Vite + TypeScript)
-├── .gitignore                   # Bỏ qua .venv, __pycache__, .env, node_modules, build
+│   └── src/
+│       ├── pages/               # Giao diện 8 màn hình quản trị (W1-W8) (M1-M3, M7)
+│       ├── components/          # Biểu đồ thống kê, Bản đồ tọa độ & Form Upload Media
+│       └── services/            # Cấu hình Axios kết nối RESTful API với Backend
+├── docs/                        # Báo cáo SRS/SDD, Biểu đồ thiết kế & Tài liệu hướng dẫn (M8)
 └── README.md
 ```
 
@@ -368,7 +379,7 @@ pip install -r requirements.txt
 
 ### Bước 3: Cấu hình file `.env` và Khởi chạy Server FastAPI
 
-1. Trong thư mục **`backend/`**, tạo một file mới tên là **`.env`** (hoặc copy từ `.env.example`) với nội dung sau:
+1. Trong thư mục **`backend/`**, tạo một file mới tên là **`.env`** với nội dung sau:
 
 ```env
 USE_WINDOWS_AUTH=true
