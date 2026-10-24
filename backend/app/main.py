@@ -7,12 +7,12 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.database import get_db, DRIVER, DB_SERVER, DB_NAME
-from app.routers import auth_router, artifact_router
+from app.routers import auth_router, artifact_router, beacon_router, analytics_router
 
 app = FastAPI(
     title="Smart Heritage API",
     description="RESTful API đồng bộ 100% với Figma Web Admin (W1-W8) và Mobile App (1-10)",
-    version="1.2.0"
+    version="1.3.0"
 )
 
 app.add_middleware(
@@ -27,9 +27,11 @@ os.makedirs("static/images", exist_ok=True)
 os.makedirs("static/audio", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Gắn kết các Router theo từng Cột mốc (M1, M2)
+# Gắn kết đầy đủ các Router theo từng Cột mốc (M1, M2, M3, M6, M7)
 app.include_router(auth_router.router)
 app.include_router(artifact_router.router)
+app.include_router(beacon_router.router)
+app.include_router(analytics_router.router)
 
 
 @app.get("/api/health-db", tags=["0. System Health (M0)"])
@@ -44,7 +46,7 @@ def check_database_connection(db: Session = Depends(get_db)):
     }
 
 
-@app.get("/api/beacons/resolve", tags=["3. iBeacon Resolve Engine (M0 - Mobile 4, 5, 6)"])
+@app.get("/api/beacons/resolve", tags=["3. iBeacons & Floor Map (M3 - W5, W6, Mobile 7)"])
 def resolve_beacon_artifact(
     major: int = Query(..., description="Mã Major (VD: 1)"),
     minor: int = Query(..., description="Mã Minor (VD: 101)"),

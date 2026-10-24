@@ -82,3 +82,80 @@ class ArtifactUpdate(BaseModel):
     map_x: Optional[float] = None
     map_y: Optional[float] = None
     status: Optional[str] = None
+
+
+# =========================================================================
+# M3: SCHEMAS CHO QUẢN LÝ THIẾT BỊ IBEACON & BẢN ĐỒ DI TÍCH (W5, W6, Mobile 7)
+# =========================================================================
+class BeaconCreate(BaseModel):
+    beacon_code: str = Field(..., examples=["BC-006"])
+    artifact_id: Optional[int] = Field(None, description="ID hiện vật được gán (nếu có)")
+    zone_name: str = Field("Tầng 1 - Phòng Đông Sơn")
+    uuid: str = Field("FDA50693-A4E2-4FB1-AFCF-C6EB07647825")
+    major: int = Field(1, examples=[1])
+    minor: int = Field(..., examples=[106])
+    tx_power: int = -59
+    trigger_distance: float = Field(2.0, description="Bán kính phát sóng (m)")
+    battery_level: int = Field(100, ge=0, le=100)
+    map_x: float = 340.0
+    map_y: float = 215.0
+    status: str = Field("ACTIVE", description="ACTIVE, LOW_BATTERY, LOST_SIGNAL")
+
+
+class BeaconUpdate(BaseModel):
+    beacon_code: Optional[str] = None
+    artifact_id: Optional[int] = None
+    zone_name: Optional[str] = None
+    uuid: Optional[str] = None
+    major: Optional[int] = None
+    minor: Optional[int] = None
+    tx_power: Optional[int] = None
+    trigger_distance: Optional[float] = None
+    battery_level: Optional[int] = None
+    map_x: Optional[float] = None
+    map_y: Optional[float] = None
+    status: Optional[str] = None
+
+
+class BeaconCoordinateUpdate(BaseModel):
+    artifact_id: Optional[int] = None
+    zone_name: Optional[str] = None
+    trigger_distance: Optional[float] = 2.0
+    map_x: float = Field(..., examples=[340.0])
+    map_y: float = Field(..., examples=[215.0])
+
+
+class SiteMapUpdate(BaseModel):
+    floor_name: Optional[str] = Field(None, examples=["Tầng 1 - Khu trưng bày chính"])
+    map_image_url: str = Field(..., examples=["/static/images/floorplan_tang1.png"])
+
+
+# =========================================================================
+# M6 & M7: SCHEMAS CHO LỊCH SỬ, YÊU THÍCH, ĐÁNH GIÁ & KIỂM DUYỆT (W2, W7, Mobile 8, 9)
+# =========================================================================
+class VisitLogCreate(BaseModel):
+    user_id: Optional[int] = None
+    device_id: Optional[str] = Field("android-guest-01", description="Định danh máy khi dùng chế độ Guest")
+    artifact_id: int = Field(..., examples=[1])
+    beacon_id: Optional[int] = Field(1, examples=[1])
+    lang_used: str = Field("vi", examples=["vi"])
+    duration_seconds: int = Field(60, ge=1, examples=[120])
+    is_favorite: bool = False
+
+
+class FavoriteToggleRequest(BaseModel):
+    user_id: Optional[int] = None
+    device_id: Optional[str] = Field("android-guest-01")
+    artifact_id: int = Field(..., examples=[1])
+
+
+class FeedbackCreate(BaseModel):
+    user_id: Optional[int] = None
+    visitor_name: str = Field("Khách tham quan", examples=["Nguyễn Văn A"])
+    artifact_id: int = Field(..., examples=[1])
+    rating: int = Field(..., ge=1, le=5, examples=[5])
+    comment: Optional[str] = Field(None, examples=["Thuyết minh rất hay và dễ hiểu!"])
+
+
+class FeedbackVisibilityUpdate(BaseModel):
+    is_visible: bool = Field(..., description="True = Hiển thị (Duyệt), False = Đã ẩn")
