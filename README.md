@@ -22,9 +22,9 @@ Tại nhiều bảo tàng và khu di tích lịch sử ở Việt Nam, việc ti
 **Smart Heritage loại bỏ thao tác quét mã thủ công.** Thay vào đó, luồng trải nghiệm tự động của hệ thống là:
 
 ```text
-Approach  →  Detect (BLE)  →  Resolve  →  Experience  →  Cache  →  Analyze
-Tiếp cận     Bắt sóng iBeacon   Tra cứu     Nghe/Xem       Lưu tạm   Thống kê
-hiện vật     dưới 2.0 mét       đa ngữ      thuyết minh    xem tiếp  lượt tương tác
+Approach  -->  Detect (BLE)  -->  Resolve  -->  Experience  -->  Cache  -->  Analyze
+Tiếp cận       Bắt sóng iBeacon   Tra cứu       Nghe/Xem         Lưu tạm     Thống kê
+hiện vật       dưới 2.0 mét       đa ngữ        thuyết minh      xem tiếp    lượt tương tác
 ```
 
 ### Luồng tự động nhận diện iBeacon và thuyết minh (điểm đặc trưng)
@@ -71,7 +71,7 @@ flowchart LR
 
     subgraph Clients["📱 Giao diện Người dùng"]
         APP["📱 Android App<br/>Kotlin + Jetpack Compose<br/>+ Room Cache"]
-        WEB["🖥️ Admin Web Portal<br/>React + TypeScript<br/>+ Chart.js"]
+        WEB["🖥️ Admin Web Portal<br/>React + TypeScript<br/>+ Vite"]
     end
 
     subgraph Backend["⚙️ Server Trung tâm"]
@@ -95,7 +95,7 @@ flowchart LR
 
 ### Quy tắc kết nối giữa các thành phần (dễ nhớ)
 
-> **iBeacon chỉ phát mã số qua Bluetooth $\rightarrow$ App Android bắt mã số đó hỏi FastAPI $\rightarrow$ FastAPI tra bảng SQL Server trả về nội dung và link thuyết minh MP3.**
+> **iBeacon chỉ phát mã số qua Bluetooth** $\rightarrow$ **App Android bắt mã số đó hỏi FastAPI** $\rightarrow$ **FastAPI tra bảng SQL Server trả về nội dung và link thuyết minh MP3.**
 
 | Việc cần làm | Đi đường nào | Vì sao |
 |---|---|---|
@@ -105,7 +105,7 @@ flowchart LR
 | Xem tiếp khi đã đi xa hiện vật | `Android App` $\rightarrow$ `Room Database` (Bộ nhớ trong điện thoại) | Nội dung vừa mở được lưu tạm trên máy, mất sóng Bluetooth vẫn nghe tiếp đến hết bài |
 | Ghi nhận lượt khách & thời gian xem | `Android App` $\rightarrow$ `FastAPI` (`POST /api/visit-logs`) | Khi khách rời hiện vật, App gửi số giây đã xem lên Server để cộng vào biểu đồ thống kê |
 | Thêm hiện vật, tải MP3 & gán Beacon | `Admin Web` $\rightarrow$ `FastAPI` $\rightarrow$ `SQL Server` | Giúp ban quản lý cập nhật nội dung mới từ trình duyệt mà không cần sửa code ứng dụng di động |
-| Xem biểu đồ & xuất báo cáo Excel/PDF | `Admin Web` $\rightarrow$ `FastAPI` (`GET /api/analytics/dashboard`) | Server tổng hợp dữ liệu bằng các câu lệnh `GROUP BY` từ SQL Server trả về cho Web vẽ biểu đồ |
+| Xem biểu đồ & xuất báo cáo Excel/CSV | `Admin Web` $\rightarrow$ `FastAPI` (`GET /api/analytics/dashboard`) | Server tổng hợp dữ liệu bằng các câu lệnh `GROUP BY` từ SQL Server trả về cho Web hiển thị |
 
 ---
 
@@ -119,7 +119,7 @@ flowchart LR
 |---|---|---|---|
 | **Python** | **Python 3.12.x (64-bit)** *(Khuyên dùng `3.12.10`)* | TV1, TV3, TV4, TV5 | **Không dùng Python 3.14 hoặc 3.15** (vì chưa có sẵn gói wheel `.whl` cho `pyodbc` và `pydantic-core` trên Windows). Khi cài nhớ tích chọn **"Add python.exe to PATH"**. |
 | **SQL Server & SSMS** | **SQL Server 2019 / 2022** (Developer hoặc Express) + **SSMS 19/20** | TV1, TV3, TV4, TV5 | Đi kèm sẵn `ODBC Driver 17/18 for SQL Server` để kết nối với Backend. |
-| **Node.js** | **Node.js 20.x LTS** (hoặc `18.x LTS`) | TV3, TV4 (Web Admin) | Dùng để chạy cổng quản trị React + Vite. |
+| **Node.js** | **Node.js 20.x LTS** (hoặc `18.x / 22.x LTS`) | TV3, TV4 (Web Admin) | Dùng để chạy cổng quản trị React + Vite (`admin-web/`). |
 | **Android Studio** | **Android Studio Koala / Ladybug (2024.x+)** + **JDK 17** | TV2, TV1 (Mobile) | Cần 1 điện thoại Android thật để quét Bluetooth và 1 điện thoại phụ cài app **Beacon Simulator**. |
 | **Git & VS Code** | Bản mới nhất | Cả 5 thành viên | Quản lý nhánh theo mô hình `main` - `develop` - `feature/*`. |
 
@@ -134,39 +134,28 @@ flowchart LR
 | Upload & Phục vụ file Ảnh / MP3 | `python-multipart==0.0.12` + `FastAPI StaticFiles` |
 | Xuất báo cáo thống kê | `StreamingResponse CSV (UTF-8-SIG BOM)` tương thích trực tiếp với Microsoft Excel |
 
-### 📱 Mobile (Android - Định hướng tích hợp)
+### 🗄️ Cơ sở dữ liệu (`SmartHeritageDB` - Trọng tâm học phần Hệ quản trị CSDL)
+
+| Mục đích | Kỹ thuật Hệ quản trị CSDL áp dụng |
+|---|---|
+| Kiến trúc 3 mức trừu tượng | Mức Vật lý (`Clustered / Non-Clustered Index`), Mức Luận lý (`6 bảng + Constraints`), Mức Khung nhìn (`vw_PublicArtifacts_VI_EN`, `vw_BeaconHealthMonitor`) |
+| Quản lý Giao tác & Khóa (ACID) | `BEGIN TRAN ... COMMIT / ROLLBACK TRAN`, kiểm tra biến hệ thống `@@ERROR`, `@@ROWCOUNT`, `@@TRANCOUNT` |
+| Chống 4 vấn đề truy xuất đồng thời | `READ COMMITTED` (chống *Dirty Read*), `REPEATABLE READ` (chống *Non-Repeatable Read*), `SERIALIZABLE` (chống *Phantom Read*), và `WITH (UPDLOCK)` (nâng cấp khóa `ULock` chống *Lost Update*) |
+| Lập trình T-SQL nâng cao | Vòng lặp `WHILE + IF NOT EXISTS` cấp mã tự động (`sp_GenerateNextArtifactCode`), Con trỏ `CURSOR + @@FETCH_STATUS` (`sp_AuditBeaconHealth_Cursor`), cấu trúc rẽ nhánh `CASE ... WHEN` |
+
+### 🖥️ Admin Web (`admin-web/`)
 
 | Mục đích | Công nghệ |
 |---|---|
-| Ngôn ngữ / Giao diện | Kotlin, Jetpack Compose, Material 3 (Min SDK: `26`, Target SDK: `34`) |
-| Kiến trúc | MVVM (`UI` $\rightarrow$ `ViewModel` $\rightarrow$ `Repository`), Kotlin Coroutines + StateFlow |
-| Quét sóng iBeacon (BLE) | `Android Beacon Library (AltBeacon 2.20+)` |
-| Giả lập thiết bị phát iBeacon | Ứng dụng `Beacon Simulator` trên điện thoại Android phụ |
-| Phát thuyết minh Audio / Video | `AndroidX Media3 (ExoPlayer)` |
-| Lưu đệm xem ngoài vùng sóng | `Room Database (SQLite)` + `DataStore` |
-| Gọi REST API & Hiển thị ảnh | `Retrofit2` + `OkHttp3` + `Coil` |
-### 🗄️ Cơ sở dữ liệu
-
-| Mục đích | Công nghệ & Phiên bản |
-|---|---|
-| Hệ quản trị CSDL | `Microsoft SQL Server 2019 / 2022` (Database: `SmartHeritageDB`) |
-| Công cụ quản trị & Thiết kế | `SQL Server Management Studio (SSMS 19/20)` |
-| Driver kết nối từ Backend | `ODBC Driver 17 for SQL Server` hoặc `ODBC Driver 18 for SQL Server` |
-
-### 🖥️ Admin Web (Định hướng tích hợp)
-
-| Mục đích | Công nghệ |
-|---|---|
-| Framework | `React 18` + `Vite` + `TypeScript` |
-| Thư viện giao diện CMS | `Ant Design` / `Tailwind CSS` |
-| Biểu đồ thống kê Dashboard | `Chart.js` / `Recharts` |
-| Gọi API | `Axios` |
+| Framework & Build Tool | `React 19` + `Vite` + `TypeScript` |
+| Kết nối RESTful API | `Fetch API` (`src/api.ts`) + Quản lý phiên đăng nhập JWT (`localStorage`) |
+| Giao diện Quản trị | Khung điều hướng 8 màn hình (`W1`–`W8`), hỗ trợ Upload Ảnh/MP3 và chấm tọa độ $(X, Y)$ trực quan trên bản đồ |
 
 ---
 
 ## 5. Thiết kế cơ sở dữ liệu
 
-Schema gồm **6 bảng cốt lõi** trong SQL Server (`SmartHeritageDB`), đồng bộ 100% với thiết kế Figma Web (`W1`–`W8`) và Mobile (`1`–`10`).
+Schema gồm **6 bảng cốt lõi**, **3 Non-Clustered Indexes**, **2 Views** và **7 Stored Procedures** trong SQL Server (`database/init_schema.sql`), đồng bộ 100% với thiết kế Figma Web (`W1`–`W8`) và Mobile (`1`–`10`).
 
 ```mermaid
 erDiagram
@@ -249,29 +238,13 @@ erDiagram
     }
 ```
 
-### Trạng thái nhận diện iBeacon trên thiết bị di động
-
-```mermaid
-stateDiagram-v2
-    direction LR
-    [*] --> SCANNING: Bật Bluetooth
-    SCANNING --> DETECTED: Khoảng cách <= 2.0m
-    DETECTED --> POPUP_SHOWN: Chưa trong thời gian Cooldown
-    POPUP_SHOWN --> PLAYING_MEDIA: Khách bấm xem / nghe thuyết minh
-    PLAYING_MEDIA --> CACHED_OUT_OF_RANGE: Khách bước ra xa > 4.0m
-    CACHED_OUT_OF_RANGE --> LOG_SYNCED: Nghe xong & Gửi thống kê về Server
-    POPUP_SHOWN --> COOLDOWN_LOCKED: Khoá lặp lại (5-10 phút)
-    COOLDOWN_LOCKED --> DETECTED: Bước sang iBeacon của hiện vật khác
-```
-
 ---
 
 ## 6. Cơ chế kỹ thuật & Bảo mật: những điểm chính
 
 - **Lọc nhiễu tín hiệu BLE & Chống lặp thông báo:** Sóng Bluetooth rất dễ dao động; ứng dụng kết hợp kiểm tra ngưỡng khoảng cách kích hoạt (`trigger_distance` $\le 2.0\text{ m}$) và biến khóa thời gian (`Cooldown Timer`) để không bao giờ bật thông báo lặp lại làm phiền khách khi họ vẫn đứng tại cùng một hiện vật.
 - **Xem liên tục ngoài vùng phủ sóng:** Ngay khi hiện vật được kích hoạt, nội dung văn bản và đường dẫn âm thanh được lưu vào `Room Database` trên điện thoại, giúp khách vừa đi dạo sang khu vực khác vừa nghe hết bài thuyết minh.
-- **Tự động chuyển đổi đa ngôn ngữ:** Dựa trên cờ ngôn ngữ (`preferred_lang` = `vi` hoặc `en`) của khách, API tự động trả về tiêu đề, mô tả ngắn (`summary`), câu chuyện lịch sử (`description`) và file âm thanh `.mp3` tương ứng.
-- **Giám sát tình trạng iBeacon thụ động (Passive Telemetry):** Mỗi khi điện thoại của khách tham quan quét thấy iBeacon và gọi API `/api/beacons/resolve`, hệ thống tự động cập nhật cột `last_seen_at` của thiết bị đó.
+- **Đảm bảo tính Nhất quán & Cô lập giao tác (ACID):** Các thao tác gán iBeacon, cập nhật tọa độ sơ đồ và cộng dồn thời gian tham quan được bảo vệ bằng giao tác `BEGIN TRAN ... COMMIT TRAN` kết hợp kỹ thuật nâng cấp khóa `WITH (UPDLOCK)` và các mức cô lập `READ COMMITTED`, `REPEATABLE READ`, `SERIALIZABLE`.
 - **Bảo mật & Phân quyền (RBAC):** Xác thực người dùng bằng `HTTPBearer` JWT Token (`HS256`) và phân quyền 3 cấp độ: `ADMIN`, `CONTENT_MANAGER`, `VISITOR`.
 
 ---
@@ -292,12 +265,23 @@ Thiết kế gồm **10 màn hình Mobile (`1`–`10`)** và **8 màn hình Web 
 
 ---
 
-## 8. Cấu trúc repository (Cập nhật theo tiến độ thực tế: M0 $\rightarrow$ M7 Backend)
+## 8. Cấu trúc repository (Cập nhật theo tiến độ thực tế hiện tại)
 
-> 📌 Cấu trúc dưới đây phản ánh **chính xác 100% các thư mục và file đã được triển khai thực tế** trong repository tính đến hiện tại:
+> 📌 Cấu trúc dưới đây phản ánh **chính xác 100% các thư mục và file quan trọng đã được triển khai thực tế** trong repository:
 
 ```text
 SmartHeritage/
+├── admin-web/                       # Cổng quản trị Web (React + Vite + TypeScript)
+│   ├── public/                      # Biểu tượng tĩnh của ứng dụng Web
+│   ├── src/
+│   │   ├── api.ts                   # Cấu hình kết nối HTTP & tự động đính kèm Bearer JWT Token gọi FastAPI
+│   │   ├── App.tsx                  # Khung điều hướng và giao diện 8 màn hình quản trị (W1 -> W8)
+│   │   ├── main.tsx                 # Điểm khởi chạy ứng dụng React DOM
+│   │   └── index.css                # Định dạng CSS mặc định
+│   ├── index.html                   # Trang HTML gốc của Vite
+│   ├── package.json                 # Khai báo các gói thư viện và script chạy Web (dev, build)
+│   ├── tsconfig.json                # Cấu hình trình biên dịch TypeScript
+│   └── vite.config.ts               # Cấu hình Vite Dev Server
 ├── backend/                         # Server Python FastAPI
 │   ├── app/
 │   │   ├── routers/
@@ -310,13 +294,14 @@ SmartHeritage/
 │   │   ├── main.py                  # [M0-M7] Khởi tạo FastAPI, CORS, Static Media, Health-DB, Resolve iBeacon & Gắn kết 4 Routers
 │   │   └── schemas.py               # [M1-M7] Khuôn mẫu dữ liệu Pydantic cho toàn bộ các phân hệ
 │   ├── static/
-│   │   ├── audio/                   # [M0] Thư mục lưu trữ file thuyết minh âm thanh (.mp3, .wav)
-│   │   └── images/                  # [M0] Thư mục lưu trữ hình ảnh hiện vật & sơ đồ mặt bằng (.jpg, .png)
+│   │   ├── audio/                   # [M0] 10 file thuyết minh âm thanh mẫu (.mp3) khớp với CSDL
+│   │   └── images/                  # [M0] 5 ảnh hiện vật (hv_001..005.jpg) & sơ đồ mặt bằng (floorplan_tang1.png)
 │   ├── .env.example                 # [M0] File mẫu cấu hình kết nối SQL Server cho các thành viên
-│   └── requirements.txt             # [M0] Danh sách thư viện Python chuẩn của Backend
+│   ├── requirements.txt             # [M0] Danh sách thư viện Python chuẩn của Backend
+│   └── seed_media.py                # Script tự động sinh bộ file ảnh & âm thanh mẫu trong static/
 ├── database/
-│   └── init_schema.sql              # [M0] Script khởi tạo CSDL SmartHeritageDB (6 bảng + Dữ liệu mẫu HV-001..005, BC-001..005)
-├── .gitignore                       # [M0] Chặn .venv, __pycache__, .env, node_modules, build
+│   └── init_schema.sql              # [M0] Script khởi tạo SmartHeritageDB (6 bảng, 3 Index, 2 View, 7 Stored Procedures & Seed Data)
+├── .gitignore                       # [M0] Chặn .venv, __pycache__, .env, node_modules, dist, build
 └── README.md                        # Tài liệu tổng quan và hướng dẫn cài đặt dự án
 ```
 
@@ -324,18 +309,20 @@ SmartHeritage/
 
 ## 9. Hướng dẫn cài đặt và chạy dự án (Chuẩn hóa cho mọi máy trong nhóm)
 
-Bất kỳ thành viên nào sau khi `git clone` dự án về máy chỉ cần thực hiện đúng **3 bước** dưới đây:
+Bất kỳ thành viên nào sau khi `git clone` dự án (hoặc `git pull origin develop`) về máy chỉ cần thực hiện đúng **3 bước** dưới đây:
 
 ### Bước 1: Khởi tạo Cơ sở dữ liệu trên SQL Server (SSMS)
 1. Mở **SQL Server Management Studio (SSMS)** và kết nối vào Server của máy bạn.
    * *Ghi nhớ tên **Server name** ở màn hình đăng nhập SSMS (ví dụ: `.\SQLEXPRESS`, `localhost`, hoặc `TEN_MAY\SQLEXPRESS`).*
-2. Chọn **File $\rightarrow$ Open $\rightarrow$ File...**, mở file **`database/init_schema.sql`** trong thư mục dự án.
-3. Nhấn **`F5` (Execute)** để tạo CSDL `SmartHeritageDB` gồm 6 bảng và dữ liệu mẫu đồng bộ với Figma.
+2. Chọn **File** $\rightarrow$ **Open** $\rightarrow$ **File...**, mở file **`database/init_schema.sql`** trong thư mục dự án.
+3. Nhấn **`F5` (Execute)** để tạo CSDL `SmartHeritageDB` (bao gồm 6 bảng, 3 Indexes, 2 Views, 7 Stored Procedures xử lý giao tác đồng thời và dữ liệu mẫu).
 
-### Bước 2: Thiết lập Môi trường ảo Python 3.12 & Cài đặt thư viện
+---
+
+### Bước 2: Thiết lập Môi trường ảo Python 3.12 & Khởi chạy Backend FastAPI (Terminal 1)
 > **Yêu cầu:** Máy đã cài đặt **Python 3.12 (64-bit)** từ [python.org/downloads/windows](https://www.python.org/downloads/windows/) (có tích chọn *"Add python.exe to PATH"*).
 
-Mở Terminal trong VS Code và chạy lần lượt các lệnh:
+Mở cửa sổ Terminal thứ nhất trong VS Code tại thư mục gốc dự án và chạy lần lượt:
 
 ```powershell
 # 1. Di chuyển vào thư mục backend
@@ -352,37 +339,61 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 # 5. Cài đặt các thư viện trong requirements.txt
 pip install -r requirements.txt
+
+# 6. Tạo bộ ảnh và âm thanh mẫu vào thư mục static/ (nếu chưa có)
+python seed_media.py
 ```
 *(Khi cần thoát khỏi môi trường ảo, chỉ cần gõ lệnh `deactivate`).*
 
-### Bước 3: Cấu hình file `.env` và Khởi chạy FastAPI Server
-1. Trong thư mục `backend/`, copy file `.env.example` thành file **`.env`** và điền đúng tên `DB_SERVER` trên máy của bạn:
-   ```env
-   USE_WINDOWS_AUTH=true
-   DB_SERVER=.\SQLEXPRESS
-   DB_NAME=SmartHeritageDB
-   ```
-2. Khởi chạy Server FastAPI (đảm bảo đầu dòng lệnh đang có tiền tố `(.venv)`):
-   ```powershell
-   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-   ```
-3. Mở trình duyệt kiểm tra:
-   * **`http://localhost:8000/docs`**: Giao diện Swagger UI để chạy thử toàn bộ 25+ RESTful API của dự án.
-   * **`http://localhost:8000/api/health-db`**: Trả về `"status": "CONNECTED"` và `"total_artifacts": 5`.
-   * **`http://localhost:8000/api/analytics/dashboard`**: Trả về toàn bộ số liệu thống kê cho trang Dashboard W2.
+Tiếp theo, tạo file **`backend/.env`** (copy từ `backend/.env.example`) và điền đúng tên `DB_SERVER` của máy bạn:
+```env
+USE_WINDOWS_AUTH=true
+DB_SERVER=.\SQLEXPRESS
+DB_NAME=SmartHeritageDB
+```
+Sau đó khởi chạy Server FastAPI (giữ cửa sổ Terminal này chạy ngầm):
+```powershell
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+* Kiểm tra Swagger UI tại: **`http://localhost:8000/docs`**
+* Kiểm tra kết nối Database tại: **`http://localhost:8000/api/health-db`**
+
+---
+
+### Bước 3: Cài đặt & Khởi chạy Cổng Quản trị `admin-web` (Terminal 2)
+> **Yêu cầu:** Máy đã cài đặt **Node.js (LTS)** từ [nodejs.org](https://nodejs.org/). Giữ nguyên Terminal 1 đang chạy FastAPI ở cổng `8000` để Web có thể lấy dữ liệu.
+
+Mở một **cửa sổ Terminal thứ hai** trong VS Code (bấm dấu `+` ở góc phải khung Terminal) và chạy:
+
+```powershell
+# 1. Di chuyển vào thư mục admin-web đã có sẵn trong repo
+cd admin-web
+
+# 2. Cài đặt các gói thư viện Node.js (dùng cờ --legacy-peer-deps để tránh xung đột phiên bản linter)
+npm install --legacy-peer-deps
+
+# 3. Khởi chạy Vite Dev Server
+npm run dev
+```
+
+* Mở trình duyệt truy cập địa chỉ hiển thị trên Terminal (mặc định là **`http://localhost:5173/`**).
+* Đăng nhập tại màn hình **W1** bằng tài khoản Admin mẫu:
+  * **Email:** `ngocanh@smartheritage.vn`
+  * **Mật khẩu:** `123456`
+* Trải nghiệm trực tiếp các màn hình từ **`W2` đến `W8`** (Xem thống kê & xuất file CSV ở `W2`, quản lý & thêm hiện vật kèm upload file ở `W3-W4`, quản lý iBeacon & chấm tọa độ bản đồ ở `W5-W6`, duyệt đánh giá ở `W7` và xem tài khoản ở `W8`).
 
 ---
 
 ## 10. Lộ trình (Hoàn thành trong 1 tháng - 30 ngày)
 
-- [x] **M0** Nền tảng (Ngày 1–3): Khởi tạo repo, thiết kế Figma, tạo CSDL SQL Server (`init_schema.sql`), khung FastAPI (`database.py`, `main.py`)
+- [x] **M0** Nền tảng (Ngày 1–3): Khởi tạo repo, thiết kế Figma, tạo CSDL SQL Server (`init_schema.sql`), bộ file mẫu (`seed_media.py`) & khung FastAPI
 - [x] **M1** Tài khoản & Đa ngôn ngữ (Ngày 4–6): Đăng ký, đăng nhập, chế độ Khách (Guest), chọn ngôn ngữ, quản lý người dùng (`auth.py`, `auth_router.py`)
 - [x] **M2** Quản trị nội dung CMS (Ngày 7–10): Thống kê thẻ hiện vật, thêm/sửa/xóa hiện vật đa ngôn ngữ, upload ảnh & file thuyết minh MP3 (`artifact_router.py`)
 - [x] **M3** Hạ tầng iBeacon (Ngày 11–13): API đăng ký thiết bị iBeacon (`UUID`, `Major`, `Minor`), gán vào hiện vật, cấu hình bán kính & tọa độ sơ đồ (`beacon_router.py`)
 - [ ] **M4** Nhận diện iBeacon tự động (Ngày 14–18): Tích hợp quét sóng BLE trên Mobile, lọc khoảng cách $\le 2.0\text{ m}$, chống lặp thông báo & tự bật Popup
 - [ ] **M5** Trải nghiệm Đa phương tiện & Bản đồ (Ngày 19–22): Trình phát Audio Guide/Video, lưu tạm xem tiếp ngoài vùng sóng (Cache) & bản đồ sơ đồ di tích trên Mobile/Web
 - [x] **M6** Tương tác khách tham quan - Backend API (Ngày 23–25): API lưu hiện vật yêu thích (Favorites), nhật ký lịch sử tham quan (Visit History), chấm sao & gửi đánh giá (`analytics_router.py`)
-- [x] **M7** Thống kê & Quản trị nâng cao - Backend API (Ngày 26–28): API Dashboard biểu đồ lượt khách, Top hiện vật, ngôn ngữ, kiểm duyệt đánh giá & xuất báo cáo Excel/CSV (`analytics_router.py`)
+- [x] **M7** Thống kê & Quản trị nâng cao - Backend API & Khung Web (Ngày 26–28): API Dashboard biểu đồ lượt khách, Top hiện vật, ngôn ngữ, kiểm duyệt đánh giá, xuất báo cáo Excel/CSV & khung `admin-web` (`W1`–`W8`)
 - [ ] **M8** Phát hành, Tài liệu & Demo (Ngày 29–30): Đồng bộ toàn hệ thống Mobile + Web + Backend, hoàn thiện báo cáo Word (SRS/SDD), hướng dẫn sử dụng & quay video demo
 
 ---
@@ -392,7 +403,8 @@ pip install -r requirements.txt
 | Thành viên | Vai trò chính |
 |---|---|
 | **Phạm Gia Khiêm** (Leader - TV1) | Thiết kế CSDL SQL Server, phát triển Backend FastAPI & tích hợp hệ thống |
-| **Nguyễn Tuấn Khang** (TV2) | Phát triển ứng dụng di động Android (Kotlin, Jetpack Compose, Quét sóng BLE iBeacon) |
-| **Thành viên 3** (TV3) | Phát triển Web Admin CMS (Quản lý di tích, hiện vật đa ngôn ngữ & cấu hình iBeacon) |
-| **Thành viên 4** (TV4) | Phát triển Dashboard Thống kê, Biểu đồ báo cáo, Xuất Excel/PDF & Quản lý phản hồi |
+| **Thành viên 2** (TV2) | Phát triển ứng dụng di động Android (Kotlin, Jetpack Compose, Quét sóng BLE iBeacon) |
+| **Thành viên 3** (TV3) | Phát triển Web Admin CMS (Quản lý di tích, hiện vật đa ngôn ngữ & cấu hình iBeacon `W3`–`W6`) |
+| **Thành viên 4** (TV4) | Phát triển Dashboard Thống kê, Biểu đồ báo cáo, Xuất Excel/PDF & Quản lý phản hồi (`W2`, `W7`, `W8`) |
 | **Thành viên 5** (TV5) | Thiết kế giao diện Figma, chuẩn bị Dữ liệu mẫu (Việt/Anh, Audio MP3) & Tài liệu báo cáo |
+```
