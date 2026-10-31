@@ -35,25 +35,47 @@ class MainActivity : ComponentActivity() {
                     startDestination = "language"
                 ) {
                     composable("language") {
-                        PlaceholderScreen(
-                            title = "Smart Heritage\nChọn ngôn ngữ",
-                            navController = navController,
-                            primaryText = "Tiếp tục",
-                            primaryRoute = "auth"
+                        WelcomeScreen(
+                            onContinue = {
+                                navController.navigate("auth")
+                            }
                         )
                     }
 
+                    //Màn hình đăng nhập
                     composable("auth") {
-                        PlaceholderScreen(
-                            title = "Đăng nhập / Đăng ký",
-                            navController = navController,
-                            primaryText = "Tham quan với tư cách khách",
-                            primaryRoute = "home",
-                            secondaryText = "Quay lại",
-                            secondaryRoute = "language"
+                        LoginScreen(
+                            onLoginSuccess = {
+                                navController.navigate("profile") {
+                                    popUpTo("auth") { inclusive = true }
+                                }
+                            },
+                            onRegister = {
+                                navController.navigate("register")
+                            },
+                            onGuest = {
+                                navController.navigate("home")
+                            }
                         )
                     }
 
+                    //MÀn hình 3
+                    composable("register"){
+                        CreateAccountScreen(
+                            onRegisterSuccess = {
+                                navController.navigate("profile") {
+                                    popUpTo("auth") {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                            onLogin = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+
+                    //Trang chủ
                     composable("home") {
                         PlaceholderScreen(
                             title = "Trang chủ - Danh sách hiện vật",
@@ -64,7 +86,7 @@ class MainActivity : ComponentActivity() {
                             secondaryRoute = "profile"
                         )
                     }
-
+                    //Chi tiết hiện vật
                     composable("detail") {
                         PlaceholderScreen(
                             title = "Chi tiết hiện vật",
@@ -75,16 +97,31 @@ class MainActivity : ComponentActivity() {
                             secondaryRoute = "profile"
                         )
                     }
-
+                    //Hồ sơ cá nhân
                     composable("profile") {
-                        PlaceholderScreen(
-                            title = "Hồ sơ cá nhân",
-                            navController = navController,
-                            primaryText = "Về trang chủ",
-                            primaryRoute = "home",
-                            secondaryText = "Quay lại đăng nhập",
-                            secondaryRoute = "auth"
+                        ProfileScreen(
+                            onLogout = {
+                                navController.navigate("auth") {
+                                    popUpTo("profile") {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                            onHome = {
+                                navController.navigate("home") {
+                                    popUpTo("profile") {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                            onMap = {
+                                // Kết nối màn hình bản đồ sau
+                            },
+                            onFavorites = {
+                                // Kết nối màn hình đã lưu sau
+                            }
                         )
+
                     }
                 }
             }
